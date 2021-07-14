@@ -19,7 +19,7 @@ int cell_values[8] = { 150,250,350,450,550,650,750,850 };
 int hash_table[8];
 int translate_points[8][2] = { {1150,770},{1150,670}, {1150,570}, {1150,470}, {1150,370},
 	{1150,270},{1150,170},{1150,70} };
-int ll_values[8][8] = { NULL }, null_position[table_size] = { 0 };;
+int ll_values[8][8] = { NULL }, null_position[table_size] = { 0 };
 
 int type = 0, fill_y1 = 0, fill_y2 = 0;
 void draw();
@@ -112,16 +112,17 @@ void status()
 	glEnd();
 	glRasterPos3f(200, 450, 0);
 	for (int i = 0; heading[i]; i++)
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, heading[i]);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, heading[i]);
 	glRasterPos3f(50, y, 0);
 	for (int i = 0; status_text[i]; i++)
 	{
 		if (status_text[i] == '\n')
 		{
-			y -= 40;
+			y -= 35;
 			glRasterPos3f(50, y, 0);
+			continue;
 		}
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, status_text[i]);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, status_text[i]);
 	}
 }
 
@@ -259,6 +260,7 @@ void draw_null()
 			temp = temp->next;
 		}
 	}
+	
 	for (int j = 0; j < table_size; j++)
 	{
 		glRasterPos3f(1150 + 150 * null_position[j], translate_points[j][1] + 21, 0);
@@ -267,6 +269,7 @@ void draw_null()
 			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, s[i]);
 		}
 	}
+	
 }
 
 
@@ -453,19 +456,18 @@ void display()
 		int  i = 0, index;
 		if (type == 1) {
 			draw();
-			printf("\before exec\n");
 			if (execDisplay == 1) {
 
 				strcat(status_text, "Hash technique: Linear probing");
 				index = hashit(insert_key, choice);
 
-				strcat(status_text, "\nHashing the key");
+				strcat(status_text, "\nHashing the key to get Index");
 				movebox(150, 645, 500, 645, insert_key);
 
 				sprintf(buffer, "\nIndex obtained by hashing: %d", index);
 				strcat(status_text, buffer);
 
-				strcat(status_text, "\nCheck index is empty");
+				strcat(status_text, "\nChecking whether index is empty");
 				movebox(500, 645, translate_points[index][0], translate_points[index][1], index);
 
 
@@ -473,7 +475,7 @@ void display()
 				{
 
 					hash_table[index] = insert_key;
-					strcat(status_text, "\nPosition is empty. Element placed");
+					strcat(status_text, "\nIndex is empty in the table");
 					sprintf(buffer, "\nElement Placed successfully: %d", index);
 					strcat(status_text, buffer);
 
@@ -498,6 +500,7 @@ void display()
 						{
 							temp_index1 = index;
 							index = 0;
+							strcat(status_text, "\nProbing circularly for the first Index");
 							movebox(translate_points[temp_index1][0], translate_points[temp_index1][1], translate_points[index][0], translate_points[index][1], insert_key);
 							delay(1000);
 						}
@@ -505,12 +508,13 @@ void display()
 						{
 							temp_index1 = index;
 							index += 1;
+							strcat(status_text, "\nChecking whether index is empty");
 							movebox(translate_points[temp_index1][0], translate_points[temp_index1][1], translate_points[index][0], translate_points[index][1], insert_key);
 							delay(1000);
 						}
 						if (hash_table[index] == NULL)
 						{
-							sprintf(buffer, "\nEmpty index found by linear probe: %d", index);
+							sprintf(buffer, "\nEmpty Index found by linear probing: %d", index);
 							strcat(status_text, buffer);
 							//movebox(translate_points[temp_index][0], translate_points[temp_index][1], translate_points[index][0], translate_points[index][1], insert_key);
 
@@ -527,7 +531,7 @@ void display()
 						}
 						if (index == temp_index)
 						{
-							strcat(status_text, "\nHash table. Exiting");
+							strcat(status_text, "\nHash table Full. Exiting");
 							break;
 						}
 					}
@@ -553,10 +557,15 @@ void display()
 				strcat(status_text, buffer);
 
 				movebox(500, 645, translate_points[index][0] - 300, translate_points[index][1], index, 1);
+				delay(500);
+				strcat(status_text, "\nPlacing the key in the hash table");
+				sprintf(buffer, "\nElement placed in the %d position of the linked list", null_position[i]+1);
+				strcat(status_text, buffer);
 				
-				strcat(status_text, "\nPlaceing the key");
-				movebox(translate_points[index][0], translate_points[index][1], (1151 + 100 * null_position[i]), translate_points[index][1], insert_key, 1);
+				printf("########### %d ########\n", null_position[index]);
+				movebox(translate_points[index][0]-300, translate_points[index][1], (1151 + 100 * null_position[index]), translate_points[index][1], insert_key, 1);
 				insert(insert_key);
+				strcat(status_text, "\nPosition of the NULL is increased");
 				//delay(1000);
 				//glClear(GL_COLOR_BUFFER_BIT);
 				//fill_y1 = 100;
@@ -564,8 +573,9 @@ void display()
 				draw();
 				//delay(1000);
 				glutSwapBuffers();
-				strcpy(status_text, "");
+				
 			}
+			strcpy(status_text, "");
 		}
 		if (type == 3) {
 			draw();
@@ -577,7 +587,7 @@ void display()
 				sprintf(buffer, "\nIndex obtained by hashing: %d", index);
 				strcat(status_text, buffer);
 
-				strcat(status_text, "\nCheck index is empty");
+				strcat(status_text, "\nCheck whether index is empty or not ");
 				movebox(500, 645, translate_points[index][0], translate_points[index][1], index);
 				cell_fill(index);
 				glutSwapBuffers();
@@ -588,6 +598,7 @@ void display()
 					int index2 = dh_hash2(insert_key), newIndex=index;
 					int j = 1;
 					while (1) {
+						strcat(status_text, "\nIndex already filled");
 						//movebox(translate_points[index][0], translate_points[index][1], 50, 625, index);
 						backward_movebox(translate_points[newIndex][0], translate_points[newIndex][1], index);
 
@@ -602,7 +613,7 @@ void display()
 						glutSwapBuffers();
 						delay(1000);
 						if (hash_table[newIndex] == NULL) {
-							sprintf(buffer, "\nEmpty index found by Double hashin: %d", newIndex);
+							sprintf(buffer, "\nEmpty index found by Double hashing: %d", newIndex);
 							strcat(status_text, buffer);
 							hash_table[newIndex] = insert_key;
 							cell_fill(newIndex);
@@ -616,7 +627,7 @@ void display()
 				else
 				{
 					hash_table[index] = insert_key;
-					sprintf(buffer, "\nEmpty index found by linear probe: %d", index);
+					sprintf(buffer, "\nEmpty index found. Element placed: %d", index);
 					strcat(status_text, buffer);
 					
 					
@@ -625,8 +636,9 @@ void display()
 				}
 				draw();
 				glutSwapBuffers();
-				strcpy(status_text, "");
+				
 			}
+			strcpy(status_text, "");
 		}
 	}
 	state += 1;
