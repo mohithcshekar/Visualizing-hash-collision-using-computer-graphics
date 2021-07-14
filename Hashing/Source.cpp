@@ -31,15 +31,7 @@ void delay(unsigned int mseconds)
 		;
 }
 
-void myInit(void)
-{
-	glClearColor(2.0, 2.0, 2.0, 4.0);
-	glColor3f(0.0f, 0.0f, 0.0f);
-	glLineWidth(2.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0.0, glutGet(GLUT_SCREEN_WIDTH), 0.0, glutGet(GLUT_SCREEN_HEIGHT));
-}
+
 
 
 void hashfunbox()
@@ -106,7 +98,7 @@ void cell_fill(int cell)
 	glutSwapBuffers();
 	delay(1000);
 }
-char status_text[200];
+char status_text[300];
 void status()
 {
 	char heading[30] = "Algorithm explanation";
@@ -136,7 +128,7 @@ void status()
 
 void table_filler()
 {
-	char s[10];
+	char s[20];
 
 	int x = 1335, y = 800;
 	for (int i = 0; i < 8; i++) {
@@ -553,25 +545,26 @@ void display()
 			if (execDisplay == 1)
 			{
 				strcat(status_text, "\nHashing the key");
-				movebox(50, 625, 500, 625, insert_key, 1);
+				movebox(150, 645, 500, 645, insert_key);
 
 				index = hashit(insert_key, choice);
 
 				sprintf(buffer, "\nIndex obtained by hashing: %d", index);
 				strcat(status_text, buffer);
 
-				movebox(500, 625, translate_points[index][0] - 300, translate_points[index][1], index, 1);
-				insert(index);
+				movebox(500, 645, translate_points[index][0] - 300, translate_points[index][1], index, 1);
+				
 				strcat(status_text, "\nPlaceing the key");
 				movebox(translate_points[index][0], translate_points[index][1], (1151 + 100 * null_position[i]), translate_points[index][1], insert_key, 1);
-				delay(1000);
-				glClear(GL_COLOR_BUFFER_BIT);
-				fill_y1 = 100;
-				fill_y2 = 60;
+				insert(insert_key);
+				//delay(1000);
+				//glClear(GL_COLOR_BUFFER_BIT);
+				//fill_y1 = 100;
+				//fill_y2 = 60;
 				draw();
-				delay(1000);
+				//delay(1000);
 				glutSwapBuffers();
-
+				strcpy(status_text, "");
 			}
 		}
 		if (type == 3) {
@@ -579,38 +572,42 @@ void display()
 			strcat(status_text, "Hash technique: Double hashing");
 			if (execDisplay == 1)
 			{
-				movebox(50, 625, 500, 625, insert_key);
+				movebox(150, 645, 500, 645, insert_key);
 				index = dh_hash1(insert_key);
 				sprintf(buffer, "\nIndex obtained by hashing: %d", index);
 				strcat(status_text, buffer);
 
 				strcat(status_text, "\nCheck index is empty");
-				movebox(500, 625, translate_points[index][0], translate_points[index][1], index);
-
-				draw();
+				movebox(500, 645, translate_points[index][0], translate_points[index][1], index);
 				cell_fill(index);
 				glutSwapBuffers();
 				delay(1000);
+				
 
 				if (hash_table[index] != NULL) {
-					int index2 = dh_hash2(insert_key);
+					int index2 = dh_hash2(insert_key), newIndex=index;
 					int j = 1;
 					while (1) {
 						//movebox(translate_points[index][0], translate_points[index][1], 50, 625, index);
-						backward_movebox(translate_points[index][0], translate_points[index][1], index);
+						backward_movebox(translate_points[newIndex][0], translate_points[newIndex][1], index);
 
 						strcat(status_text, "\nPerforming hashing again");
-						int newIndex = (index + j * index2) % table_size;
+						newIndex = (index + j * index2) % table_size;
 
-						movebox(50, 625, 500, 625, insert_key);
+						movebox(50, 645, 500, 645, insert_key);
 						sprintf(buffer, "\nIndex obtained by double hashing: %d", newIndex);
 						strcat(status_text, buffer);
-						movebox(500, 625, translate_points[index][0], translate_points[index][1], index);
-
+						movebox(500, 645, translate_points[newIndex][0], translate_points[newIndex][1], newIndex);
+						cell_fill(newIndex);
+						glutSwapBuffers();
+						delay(1000);
 						if (hash_table[newIndex] == NULL) {
 							sprintf(buffer, "\nEmpty index found by Double hashin: %d", newIndex);
 							strcat(status_text, buffer);
 							hash_table[newIndex] = insert_key;
+							cell_fill(newIndex);
+							glutSwapBuffers();
+							delay(1000);
 							break;
 						}
 						j++;
@@ -621,8 +618,13 @@ void display()
 					hash_table[index] = insert_key;
 					sprintf(buffer, "\nEmpty index found by linear probe: %d", index);
 					strcat(status_text, buffer);
-					delay(1000);
+					
+					
+					
+					
 				}
+				draw();
+				glutSwapBuffers();
 				strcpy(status_text, "");
 			}
 		}
@@ -656,12 +658,27 @@ void keyboard(unsigned char key, int x, int y) {
 		insert_key = atoi(bufferO);
 		strcpy(bufferO, "");
 		execDisplay = 1;
-		printf("\nEchoing Enter\n");
 		state = 0;
 		display();
 	}
 }
 
+
+void reshape(GLint w, GLint h)
+{
+	glViewport(0, 0, w, h);
+	glClearColor(2.0, 2.0, 2.0, 4.0);
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glLineWidth(2.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0, glutGet(GLUT_SCREEN_WIDTH), 0.0, glutGet(GLUT_SCREEN_HEIGHT));
+	glClear(GL_COLOR_BUFFER_BIT);
+	if (type != 0) {
+		draw();
+		glutSwapBuffers();
+	}
+}
 ///////////////////
 
 
@@ -708,6 +725,7 @@ int hashit(int key, int choice) {
 	return index;
 
 }
+
 void main(int argc, char** argv)
 {
 
@@ -726,9 +744,10 @@ void main(int argc, char** argv)
 	glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Hashing");
-	myInit();
+	//myInit();
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
+	glutReshapeFunc(reshape);
 	glutCreateMenu(hash_option);
 	glutAddMenuEntry("Linear Probing", 1);
 	glutAddMenuEntry("Chaining", 2);
