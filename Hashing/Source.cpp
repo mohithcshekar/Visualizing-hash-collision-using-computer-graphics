@@ -36,16 +36,21 @@ void delay(unsigned int mseconds)
 
 void hashfunbox()
 {
-	glBegin(GL_LINE_LOOP);
+	glColor3f(0.5f, 0.5f, 0.8f);
+	glBegin(GL_QUADS);
 	glVertex2i(350, 630);
 	glVertex2i(550, 630);
 	glVertex2i(550, 730);
 	glVertex2i(350, 730);
 	glEnd();
 	char s[] = "Hash function";
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glRasterPos3f(380, 680, 0);
-	for (int i = 0; s[i]; i++)
+	for (int i = 0; s[i]; i++) {
+		
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, s[i]);
+	}
+	glColor3f(0.0f, 0.0f, 0.0f);
 }
 struct node
 {
@@ -93,10 +98,11 @@ void insert(int value)
 
 void cell_fill(int cell)
 {
-	//printf("\nInside fun");
+	glColor3f(1.0f, 1.0f, 0.0f);
 	glRecti(1300, 900 - (cell * 100 + 50), 1400, 900 - (cell * 100 + 150));
 	glutSwapBuffers();
 	delay(1000);
+	glColor3f(0.0f, 0.0f, 0.0f);
 }
 char status_text[300];
 void status()
@@ -679,7 +685,7 @@ void keyboard(unsigned char key, int x, int y) {
 void reshape(GLint w, GLint h)
 {
 	glViewport(0, 0, w, h);
-	glClearColor(2.0, 2.0, 2.0, 4.0);
+	glClearColor(0.0, 2.0, 2.0, 4.0);
 	glColor3f(0.0f, 0.0f, 0.0f);
 	glLineWidth(2.0);
 	glMatrixMode(GL_PROJECTION);
