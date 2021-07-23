@@ -5,24 +5,25 @@
 #include <stdlib.h>
 #include<GL/glut.h>
 #include<time.h>
-
-
-int hashit(int key, int choice);
-int hf_division(int key);
-int hf_midsquare(int key);
-int hf_folding(int key);
-
-
 #define table_size 8
 #define PRIME 7
+#define ANIME_SPEED 2
+
+
 int cell_values[8] = { 150,250,350,450,550,650,750,850 };
 int hash_table[8];
 int translate_points[8][2] = { {1150,770},{1150,670}, {1150,570}, {1150,470}, {1150,370},
 	{1150,270},{1150,170},{1150,70} };
 int ll_values[8][8] = { NULL }, null_position[table_size] = { 0 };
-
 int type = 0, fill_y1 = 0, fill_y2 = 0;
+
+
 void draw();
+void display();
+int hashit(int key, int choice);
+int hf_division(int key);
+int hf_midsquare(int key);
+int hf_folding(int key);
 
 void delay(unsigned int mseconds)
 {
@@ -30,9 +31,6 @@ void delay(unsigned int mseconds)
 	while (goal > clock())
 		;
 }
-
-
-
 
 void hashfunbox()
 {
@@ -69,21 +67,14 @@ void ll_init()
 
 void insert(int value)
 {
-	//create a newnode with value
 	struct node* newNode = (struct node*)malloc(sizeof(struct node));
 	newNode->data = value;
 	newNode->next = NULL;
-
-	//calculate hash key
 	int key = value % table_size;
-
-	//check if chain[key] is empty
 	if (chain[key] == NULL)
 		chain[key] = newNode;
-	//collision
 	else
 	{
-		//add the node at the end of chain[key].
 		struct node* temp = chain[key];
 		while (temp->next)
 		{
@@ -108,9 +99,8 @@ char status_text[300];
 void status()
 {
 	char heading[30] = "Algorithm explanation";
-
 	int y = 400;
-	glBegin(GL_LINE_LOOP);	//table
+	glBegin(GL_LINE_LOOP);
 	glVertex2i(30, 100);
 	glVertex2i(600, 100);
 	glVertex2i(600, 500);
@@ -150,14 +140,14 @@ void table_filler()
 }
 void table() {
 	int y1_table_line = 150, i;
-	glBegin(GL_LINE_LOOP);	//table
+	glBegin(GL_LINE_LOOP);
 	glVertex2i(1300, 50);
 	glVertex2i(1400, 50);
 	glVertex2i(1400, 850);
 	glVertex2i(1300, 850);
 	glEnd();
 
-	for (i = 0; i < 7; i++) {		//cell creator
+	for (i = 0; i < 7; i++) {
 		glBegin(GL_LINES);
 		glVertex2i(1300, y1_table_line);
 		glVertex2i(1400, y1_table_line);
@@ -181,7 +171,7 @@ void ll_box()
 			{
 				break;
 			}
-			glBegin(GL_LINE_LOOP);	//table
+			glBegin(GL_LINE_LOOP);
 			glVertex2i(x, y);
 			glVertex2i(x + 50, y + 100);
 			glVertex2i(x + 50, y + 100);
@@ -197,19 +187,14 @@ void ll_box()
 void ll_table()
 {
 	int y1_table_line = 150, i, links = 100;
-
-
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-
-	glBegin(GL_LINE_LOOP);	//table
+	glBegin(GL_LINE_LOOP);
 	glVertex2i(1000, 50);
 	glVertex2i(1100, 50);
 	glVertex2i(1100, 850);
 	glVertex2i(1000, 850);
 	glEnd();
 
-	for (i = 0; i < 7; i++) {		//cell creator
+	for (i = 0; i < 7; i++) {
 		glBegin(GL_LINES);
 		glVertex2i(1000, y1_table_line);
 		glVertex2i(1100, y1_table_line);
@@ -220,9 +205,6 @@ void ll_table()
 		glVertex2i(1100, links);
 		glVertex2i(1150, links);
 		glEnd();
-
-
-		//glFlush();
 		links += 100;
 		y1_table_line += 100;
 
@@ -309,20 +291,6 @@ void draw_node()
 			{
 				glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, s[i]);
 			}
-
-			/*if (xpos == 0) {
-				fill_y1 = 310;
-				fill_y2 = 370;
-				draw();
-				delay(1000);
-				glFlush();
-			}
-			else {
-				fill_y1 = 150;
-				fill_y2 = 250;
-				draw();
-				glFlush();
-			}*/
 			temp = temp->next;
 			xpos += 1;
 		}
@@ -361,18 +329,11 @@ void draw()
 		inputbox();
 	}
 	status();
-
-	/*glBegin(GL_LINE_LOOP);
-	glVertex2i(40, fill_y1);
-	glVertex2i(550, fill_y1);
-	glVertex2i(550, fill_y2);
-	glVertex2i(40, fill_y2);
-	glEnd();*/
 }
 
 void movebox(int x1, int y1, int x2, int y2, int element, int ll_flag = 0)
 {
-	float x = x1, y = y1; //600 450 1150 570
+	float x = x1, y = y1;
 	if (y2 > y1)
 	{
 		while (x2 > x || y2 > y)
@@ -382,10 +343,9 @@ void movebox(int x1, int y1, int x2, int y2, int element, int ll_flag = 0)
 			drawbox(x, y, element);
 			glutSwapBuffers();
 			if (x < x2)
-				x += 1.5;//2.5
+				x += ANIME_SPEED;
 			if (y < y2)
-				y += 1.5;
-			//printf("%f\t%f\n", x, y);
+				y += ANIME_SPEED;
 			delay(10);
 		}
 
@@ -397,12 +357,11 @@ void movebox(int x1, int y1, int x2, int y2, int element, int ll_flag = 0)
 			drawbox(x, y, element);
 			glutSwapBuffers();
 			if (x < x2)
-				x += 1.5;
+				x += ANIME_SPEED;
 			if (y > y2)
-				y -= 1.5;
+				y -= ANIME_SPEED;
 			delay(10);
 		}
-		//draw(280, 310);
 	}
 }
 
@@ -428,14 +387,10 @@ int dh_hash1(int key)
 {
 	return (key % table_size);
 }
-
-// function to calculate second hash
 int dh_hash2(int key)
 {
 	return (PRIME - (key % PRIME));
 }
-
-void display();
 
 int state = 0;
 void hash_option(int option)
@@ -475,8 +430,6 @@ void display()
 
 				strcat(status_text, "\nChecking whether index is empty");
 				movebox(500, 645, translate_points[index][0], translate_points[index][1], index);
-
-
 				if (hash_table[index] == NULL)
 				{
 
@@ -484,9 +437,6 @@ void display()
 					strcat(status_text, "\nIndex is empty in the table");
 					sprintf(buffer, "\nElement Placed successfully: %d", index);
 					strcat(status_text, buffer);
-
-
-
 					cell_fill(index);
 					draw();
 					glutSwapBuffers();
@@ -494,8 +444,6 @@ void display()
 				else
 				{
 					strcat(status_text, "\nIndex already filled. Probing linearly");
-					//draw();
-					//glutSwapBuffers();
 					delay(1000);
 
 					temp_index = index;
@@ -522,9 +470,7 @@ void display()
 						{
 							sprintf(buffer, "\nEmpty Index found by linear probing: %d", index);
 							strcat(status_text, buffer);
-							//movebox(translate_points[temp_index][0], translate_points[temp_index][1], translate_points[index][0], translate_points[index][1], insert_key);
-
-
+							
 							sprintf(buffer, "\nElement Placed successfully: %d", index);
 							strcat(status_text, buffer);
 							cell_fill(index);
@@ -532,7 +478,6 @@ void display()
 							draw();
 							glutSwapBuffers();
 							delay(100);
-
 							break;
 						}
 						if (index == temp_index)
@@ -567,17 +512,10 @@ void display()
 				strcat(status_text, "\nPlacing the key in the hash table");
 				sprintf(buffer, "\nElement placed in the %d position of the linked list", null_position[i]+1);
 				strcat(status_text, buffer);
-				
-				printf("########### %d ########\n", null_position[index]);
 				movebox(translate_points[index][0]-300, translate_points[index][1], (1151 + 100 * null_position[index]), translate_points[index][1], insert_key, 1);
 				insert(insert_key);
 				strcat(status_text, "\nPosition of the NULL is increased");
-				//delay(1000);
-				//glClear(GL_COLOR_BUFFER_BIT);
-				//fill_y1 = 100;
-				//fill_y2 = 60;
 				draw();
-				//delay(1000);
 				glutSwapBuffers();
 				
 			}
@@ -605,7 +543,6 @@ void display()
 					int j = 1;
 					while (1) {
 						strcat(status_text, "\nIndex already filled");
-						//movebox(translate_points[index][0], translate_points[index][1], 50, 625, index);
 						backward_movebox(translate_points[newIndex][0], translate_points[newIndex][1], index);
 
 						strcat(status_text, "\nPerforming hashing again");
@@ -634,11 +571,7 @@ void display()
 				{
 					hash_table[index] = insert_key;
 					sprintf(buffer, "\nEmpty index found. Element placed: %d", index);
-					strcat(status_text, buffer);
-					
-					
-					
-					
+					strcat(status_text, buffer);	
 				}
 				draw();
 				glutSwapBuffers();
@@ -697,9 +630,6 @@ void reshape(GLint w, GLint h)
 		glutSwapBuffers();
 	}
 }
-///////////////////
-
-
 
 int hf_division(int key)
 {
@@ -752,17 +682,13 @@ void main(int argc, char** argv)
 		hash_table[i] = NULL;
 	}
 
-	//printf("Choose the hashing function\n1.Division method\n2.Mid square method\n3.Digit folding : ");
-	//scanf("%d", &choice);
-	choice = 1;
-
-
+	printf("Choose the hashing function\n1.Division method\n2.Mid square method\n3.Digit folding : ");
+	scanf("%d", &choice);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Hashing");
-	//myInit();
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutReshapeFunc(reshape);
